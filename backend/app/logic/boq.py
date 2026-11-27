@@ -145,7 +145,20 @@ def build_boq(plan: dict, discipline: str | None = None, room: str | None = None
                       "text": "מחיצות, קירות, כניסה, קווי מערכות ועמודים לא משויכים לחלל, ולכן לא מוצגים בסינון לפי חלל",
                       "kind": "computed"})
 
+    # --- totals for summary tiles (computed here, not in the browser: CLAUDE.md)
+    totals: dict = {}
+    if not room:
+        parts = plan["partitions"]
+        totals["partitions_length"] = {
+            **computed(sum(p["len"] for p in parts) / 100,
+                       f"סכום len של כל {len(parts)} המחיצות, חלקי 100", unit="m"),
+            "ids": [p["id"] for p in parts]}
+    elec = f(plan["elec"])
+    totals["elec_points"] = {
+        **computed(len(elec), f"ספירת כל נקודות החשמל: {len(elec)}", unit="point"),
+        "ids": [e["id"] for e in elec]}
+
     if discipline:
         rows = [r for r in rows if r["discipline"] == discipline]
         notes = [n for n in notes if n["discipline"] in (discipline, None)]
-    return {"rows": rows, "notes": notes}
+    return {"rows": rows, "notes": notes, "totals": totals}

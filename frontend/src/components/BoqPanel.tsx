@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { api, ApiError, type Boq, type BoqRow, type RoomSummary } from '../api';
 import { DISCIPLINES } from './Viewer3D';
 import { FactValue, KindBadge, fmtNum, unitHe } from './KindBadge';
@@ -7,15 +7,37 @@ interface Props {
   rooms: RoomSummary[];
   onHighlight: (ids: string[]) => void;
   onOpenElement: (id: string) => void;
+  /** jump to BOQ rows (from KPI tiles); nonce makes repeated clicks re-trigger */
+  focus?: { items: string[]; ids: string[]; nonce: number } | null;
 }
 
-export function BoqPanel({ rooms, onHighlight, onOpenElement }: Props) {
+export function BoqPanel({ rooms, onHighlight, onOpenElement, focus }: Props) {
   const [discipline, setDiscipline] = useState('');
   const [room, setRoom] = useState('');
   const [data, setData] = useState<Boq | null>(null);
   const [error, setError] = useState<{ status: number; msg: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState<number | null>(null);
+  const [pending, setPending] = useState<Props['focus']>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!focus) return;
+    setDiscipline('');
+    setRoom('');
+    setPending(focus);
+  }, [focus]);
+
+  useEffect(() => {
+    if (!pending || !data || loading) return;
+    const idx = data.rows.findIndex((r) => pending.items.includes(r.item));
+    setPending(null);
+    if (idx < 0) return;
+    setOpen(idx);
+    onHighlight(pending.ids);
+    requestAnimationFrame(() => rootRef.current?.querySelector(`[data-idx="${idx}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending, data, loading]);
 
   useEffect(() => {
     let alive = true;
@@ -58,7 +80,7 @@ export function BoqPanel({ rooms, onHighlight, onOpenElement }: Props) {
   }
 
   return (
-    <div>
+    <div ref={rootRef}>
       <div className="filters">
         <select className="input" value={discipline} onChange={(e) => setDiscipline(e.target.value)} aria-label="דיסציפלינה">
           <option value="">כל הדיסציפלינות</option>
@@ -100,6 +122,7 @@ export function BoqPanel({ rooms, onHighlight, onOpenElement }: Props) {
                 return (
                   <Fragment key={idx}>
                     <tr
+                      data-idx={idx}
                       className={`boq-row${isOpen ? ' open' : ''}`}
                       onClick={() => toggle(idx, row)}
                       tabIndex={0}

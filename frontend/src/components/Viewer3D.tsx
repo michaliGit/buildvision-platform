@@ -18,7 +18,7 @@ export const DISCIPLINES: { key: Discipline; he: string; color: string }[] = [
 // vertical order when exploding (index * gap)
 const EXPLODE_ORDER: Record<Discipline, number> = { structure: 0, architecture: 1, furniture: 2, electrical: 3, systems: 4 };
 
-const ACCENT = '#22d3ee';
+const DEFAULT_ACCENT = '#22d3ee';
 const ROOM_TINTS = ['#3b4a6b', '#3d5a5a', '#4a3f66', '#5a4a3a', '#3a5a46', '#5a3a4f', '#3a4f5a', '#4f5a3a'];
 const C = {
   wall: '#a9bbd0',
@@ -86,6 +86,7 @@ interface SceneProps {
   onElement: (id: string) => void;
   labelRefs: MutableRefObject<Map<string, HTMLDivElement>>;
   labelAnchors: { key: string; pos: THREE.Vector3 }[];
+  accent: string;
 }
 
 function Controls() {
@@ -128,6 +129,7 @@ function LabelProjector({ anchors, refs, yOffset }: { anchors: SceneProps['label
 }
 
 function Scene(p: SceneProps) {
+  const ACCENT = p.accent;
   const m = useMemo(() => makeMapper(p.plan), [p.plan]);
   const { plan, wallH, highlight } = p;
   const gap = 4 * p.explode;
@@ -201,7 +203,7 @@ function Scene(p: SceneProps) {
         return { id: d.id, a, b, opening, leaf, color };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [plan, m, highlight, p.selectedElement],
+    [plan, m, highlight, p.selectedElement, ACCENT],
   );
 
   const sysLines = useMemo(
@@ -210,7 +212,7 @@ function Scene(p: SceneProps) {
         .filter((s) => s.pts && s.pts.length >= 2)
         .map((s) => ({ id: s.id, line: makeLine(s.pts.map((q) => m.v(q, wallH + 0.15)), isHi(s.id) ? ACCENT : C.sys) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [plan, m, wallH, highlight, p.selectedElement],
+    [plan, m, wallH, highlight, p.selectedElement, ACCENT],
   );
 
   const bbBox = (bb: [XY, XY], y0: number, h: number) => {
@@ -401,6 +403,7 @@ export interface ViewerProps {
   highlight: Set<string>;
   onRoom: (id: string | null) => void;
   onElement: (id: string) => void;
+  accent?: string;
 }
 
 export function Viewer3D(props: ViewerProps) {
@@ -465,6 +468,7 @@ export function Viewer3D(props: ViewerProps) {
           onElement={props.onElement}
           labelRefs={labelRefs}
           labelAnchors={labelsOn ? roomLabels : []}
+          accent={props.accent ?? DEFAULT_ACCENT}
         />
       </Canvas>
 

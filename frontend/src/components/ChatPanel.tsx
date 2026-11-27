@@ -13,7 +13,7 @@ const STATUS: Record<ChatReply['status'], { he: string; color: string }> = {
 
 const SUGGESTIONS = ['מה השטח של חדר המנכל?', 'מה יש בחדר R3?', 'מה זה P1?', 'כמה מטר מחיצות גבס יש?', 'מה גובה התקרה?'];
 
-export function ChatPanel({ onHighlight, onOpenElement }: { onHighlight: (ids: string[]) => void; onOpenElement: (id: string) => void }) {
+export function ChatPanel({ onHighlight, onOpenElement, suggestions = SUGGESTIONS }: { onHighlight: (ids: string[]) => void; onOpenElement: (id: string) => void; suggestions?: string[] }) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
@@ -53,7 +53,7 @@ export function ChatPanel({ onHighlight, onOpenElement }: { onHighlight: (ids: s
           <div>
             <p className="muted">שאלו על התכנית: שטחים, תכולת חללים, אלמנטים, כמויות ונתונים חסרים.</p>
             <div className="suggestions">
-              {SUGGESTIONS.map((s) => (
+              {suggestions.map((s) => (
                 <button key={s} type="button" className="btn" onClick={() => void send(s)}>
                   {s}
                 </button>

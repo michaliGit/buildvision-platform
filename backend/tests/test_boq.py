@@ -152,3 +152,13 @@ def test_room_filter(plan, room_id):
 def test_room_filter_windows(plan):
     assert row(build_boq(plan, room="R1"), "חלון")["quantity"]["value"] == 14
     assert row(build_boq(plan, room="R7"), "חלון")["quantity"]["value"] == 2
+
+
+def test_totals_match_acceptance(plan):
+    """Summary-tile totals come from the server and must match docs/01 (all 23 partitions, all 66 points)."""
+    from app.logic.boq import build_boq
+    t = build_boq(plan)["totals"]
+    assert round(t["partitions_length"]["value"], 2) == 59.39
+    assert len(t["partitions_length"]["ids"]) == 23
+    assert t["elec_points"]["value"] == 66
+    assert t["partitions_length"]["kind"] == "computed"

@@ -116,6 +116,7 @@
   "costs": { "status": "deferred" } 
 }
 ```
+`totals` (תמיד): `partitions_length` (בלי סינון חלל) ו־`elec_points`, כ־Fact עם `ids`. אריחי הסיכום בפרונט מציגים אותם כמו שהם; הפרונט לא מחשב סכומים.
 `costs` מופיע רק ל־`developer`. הכמות המדויקת ב־`value`; העיגול בתצוגה בלבד. חוקי השורות: `docs/01-kamuyot.md` שלב 1. סינון לפי חלל: `docs/01-kamuyot.md` שלב 3.
 
 ### `POST /api/chat`

@@ -98,6 +98,8 @@ export interface Boq {
   rows: BoqRow[];
   notes: { discipline: string | null; text: string; kind: Kind }[];
   costs?: { status: string };
+  /** Server-computed totals for summary tiles (partitions_length, elec_points). */
+  totals?: Record<string, Fact<number> & { ids?: string[] }>;
 }
 
 export interface ChatReply {

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { api, ApiError, getToken, ROLE_HE, setToken, setUnauthorizedHandler, type Plan, type RoomSummary, type User } from './api';
+import { api, ApiError, getToken, ROLE_HE, setToken, setUnauthorizedHandler, type Boq, type Plan, type RoomSummary, type User } from './api';
 import { Login } from './components/Login';
 import { Viewer3D } from './components/Viewer3D';
 import { ElementPanel, RoomPanel } from './components/DetailsPanel';
 import { BoqPanel } from './components/BoqPanel';
 import { ChatPanel } from './components/ChatPanel';
+import { BoqSummary, Overview, RoomCards } from './components/RoleViews';
+import { ROLE_CONFIG, type Kpi, type Tab } from './roles';
 
-type Tab = 'space' | 'boq' | 'chat';
 const isRoomId = (id: string) => /^R\d+$/.test(id);
 
 export default function App() {
@@ -34,14 +35,19 @@ export default function App() {
 }
 
 function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
+  const cfg = ROLE_CONFIG[user.role] ?? ROLE_CONFIG.client;
   const [plan, setPlan] = useState<Plan | null>(null);
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
+  const [boqAll, setBoqAll] = useState<Boq | null>(null);
+  const [boqError, setBoqError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>('space');
+  const [tab, setTab] = useState<Tab>(cfg.defaultTab);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [highlightIds, setHighlightIds] = useState<string[]>([]);
-  const canBoq = user.role !== 'client';
+  const [boqFocus, setBoqFocus] = useState<{ items: string[]; ids: string[]; nonce: number } | null>(null);
+  const hasTab = (t: Tab) => cfg.tabs.some((x) => x.key === t);
+  const canBoq = hasTab('boq');
 
   useEffect(() => {
     api
@@ -52,7 +58,13 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
       .rooms()
       .then(setRooms)
       .catch(() => setRooms([]));
-  }, []);
+    if (canBoq) {
+      api
+        .boq()
+        .then(setBoqAll)
+        .catch((e) => setBoqError(e instanceof ApiError ? (e.status === 403 ? 'אין הרשאה' : e.message) : 'שגיאה בטעינת הכמויות'));
+    }
+  }, [canBoq]);
 
   const highlight = useMemo(() => new Set(highlightIds), [highlightIds]);
 
@@ -73,13 +85,49 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
     setTab('space');
   }, []);
 
+  const jumpToKpi = useCallback((k: Kpi) => {
+    if (!k.items.length) return;
+    setBoqFocus({ items: k.items, ids: k.ids, nonce: Date.now() });
+    setTab('boq');
+  }, []);
+
+  const spaceView = selectedElement ? (
+    <ElementPanel elementId={selectedElement} onBack={selectedRoom ? () => setSelectedElement(null) : undefined} onOpenElement={openElement} />
+  ) : selectedRoom ? (
+    <div>
+      <button type="button" className="btn back" onClick={() => selectRoom(null)}>
+        → {user.role === 'client' ? 'כל החללים' : 'ניקוי בחירה'}
+      </button>
+      <RoomPanel roomId={selectedRoom} onOpenElement={openElement} />
+    </div>
+  ) : user.role === 'client' ? (
+    <RoomCards rooms={rooms} selected={selectedRoom} onSelect={selectRoom} />
+  ) : (
+    <div className="empty">
+      לחצו על חלל בתלת־ממד כדי לראות את הנתונים שלו.
+      {rooms.length > 0 && (
+        <div className="ids" style={{ justifyContent: 'center', marginTop: 12 }}>
+          {rooms.map((r) => (
+            <button key={r.id} type="button" className="btn" onClick={() => selectRoom(r.id)}>
+              {r.id} · {r.names.length ? r.names.join(' · ') : 'ללא שם בקובץ'}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="app">
+    <div className="app" data-role={user.role}>
       <header className="header">
-        <div className="logo">
-          Build<span>Vision</span>
+        <div className="header-brand">
+          <div className="logo">
+            Build<span>Vision</span>
+          </div>
+          <span className="header-sub">{cfg.subtitle}</span>
         </div>
         <div className="header-right">
+          <span className="header-sees muted small">רואה: {cfg.sees}</span>
           <span className={`user-pill role-${user.role}`}>
             <span className="dot">{(ROLE_HE[user.role] ?? user.display_name).slice(0, 1)}</span>
             <span>{user.display_name}</span>
@@ -91,7 +139,7 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
         </div>
       </header>
 
-      <main className="main">
+      <main className={`main main-${user.role}`}>
         {plan ? (
           <Viewer3D
             plan={plan}
@@ -100,6 +148,7 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
             highlight={highlight}
             onRoom={selectRoom}
             onElement={openElement}
+            accent={cfg.accent}
           />
         ) : (
           <div className="viewer-wrap" style={{ display: 'grid', placeItems: 'center' }}>
@@ -107,52 +156,26 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
           </div>
         )}
 
-        <aside className="panel">
+        <aside className={cfg.panelClass}>
           <nav className="tabs" role="tablist">
-            <button role="tab" aria-selected={tab === 'space'} className={`tab${tab === 'space' ? ' active' : ''}`} onClick={() => setTab('space')}>
-              חלל
-            </button>
-            {canBoq && (
-              <button role="tab" aria-selected={tab === 'boq'} className={`tab${tab === 'boq' ? ' active' : ''}`} onClick={() => setTab('boq')}>
-                כתב כמויות
+            {cfg.tabs.map((t) => (
+              <button key={t.key} role="tab" aria-selected={tab === t.key} className={`tab${tab === t.key ? ' active' : ''}`} onClick={() => setTab(t.key)}>
+                {t.label}
               </button>
-            )}
-            <button role="tab" aria-selected={tab === 'chat'} className={`tab${tab === 'chat' ? ' active' : ''}`} onClick={() => setTab('chat')}>
-              צ'אט
-            </button>
+            ))}
           </nav>
           <div className="panel-body">
-            {tab === 'space' &&
-              (selectedElement ? (
-                <ElementPanel
-                  elementId={selectedElement}
-                  onBack={selectedRoom ? () => setSelectedElement(null) : undefined}
-                  onOpenElement={openElement}
-                />
-              ) : selectedRoom ? (
-                <RoomPanel roomId={selectedRoom} onOpenElement={openElement} />
-              ) : (
-                <div className="empty">
-                  לחצו על חלל בתלת־ממד כדי לראות את הנתונים שלו.
-                  {rooms.length > 0 && (
-                    <div className="ids" style={{ justifyContent: 'center', marginTop: 12 }}>
-                      {rooms.map((r) => (
-                        <button key={r.id} type="button" className="btn" onClick={() => selectRoom(r.id)}>
-                          {r.id} · {r.names.length ? r.names.join(' · ') : 'ללא שם בקובץ'}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+            {tab === 'overview' && hasTab('overview') && <Overview boq={boqAll} rooms={rooms} boqError={boqError} onKpi={jumpToKpi} />}
+            {tab === 'space' && spaceView}
             {/* BOQ and chat stay mounted so their state survives tab switches */}
             {canBoq && (
               <div hidden={tab !== 'boq'}>
-                <BoqPanel rooms={rooms} onHighlight={setHighlightIds} onOpenElement={openElement} />
+                {user.role === 'contractor' && <BoqSummary boq={boqAll} onKpi={jumpToKpi} />}
+                <BoqPanel rooms={rooms} onHighlight={setHighlightIds} onOpenElement={openElement} focus={boqFocus} />
               </div>
             )}
             <div hidden={tab !== 'chat'} style={{ height: '100%' }}>
-              <ChatPanel onHighlight={setHighlightIds} onOpenElement={openElement} />
+              <ChatPanel onHighlight={setHighlightIds} onOpenElement={openElement} suggestions={cfg.chatSuggestions} />
             </div>
           </div>
         </aside>
