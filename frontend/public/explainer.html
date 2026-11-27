@@ -56,6 +56,9 @@ code{background:var(--surface2);padding:1px 6px;border-radius:5px}
 .run pre{margin:0;font-family:var(--f-mono);font-size:13.5px;direction:ltr;text-align:left;line-height:1.7}
 ul.clean{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
 .pending{color:var(--warn)}
+ul.check{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:8px}
+ul.check li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+ul.check li span{color:var(--ok);font-weight:800;flex:none}
 body{margin:0}
 </style>
 </head>
@@ -68,6 +71,22 @@ body{margin:0}
   <h1>איך נבנתה המערכת, ובאילו מיומנויות AI</h1>
   <p class="lead">Claude בנה את סבב 1 לבד, כמנהל של שני סוכני משנה שעבדו במקביל. הדף מסביר כל חלק במערכת, ובעיקר את מיומנויות ה־AI שבהן השתמשנו ולמה בחרנו בהן.</p>
 </header>
+
+<section>
+  <h2>צ'קליסט מיומנויות ה־AI</h2>
+  <ul class="check">
+    <li><span>✓</span>CLAUDE.md כזיכרון קבוע של הפרויקט, כולל עדכון כשהתוכנית משתנה</li>
+    <li><span>✓</span>חוזה API לפני קוד (ספציפיקציה קודם)</li>
+    <li><span>✓</span>סוכני משנה במקביל עם מנהל שבודק את העבודה שלהם</li>
+    <li><span>✓</span>הכוונה של סוכן תוך כדי עבודה (עיצוב כהה, חוויה לפי תפקיד)</li>
+    <li><span>✓</span>בדיקות קבלה מהמסמכים: 73 בדיקות, כולל 1,763.74 של העלויות</li>
+    <li><span>✓</span>מעקות בטיחות נגד הזיות: מקור לכל מספר, "אין בקובץ" במקום ניחוש</li>
+    <li><span>✓</span>למידת מכונה: מסווג מאומן, חלוקה לאימון ובדיקה, סף ביטחון</li>
+    <li><span>✓</span>אבטחה: הרשאות בשרת, גם בצ'אט וגם בעלויות; סיסמאות ומפתח חדשים לקישור החיצוני</li>
+    <li><span>✓</span>Git: ענפים, commits קטנים, Pull Requests</li>
+    <li><span>✓</span>אימות של המנהל: נתפסו באג חישוב בדפדפן (50.93 במקום 59.39) ושתי תקלות צ'אט</li>
+  </ul>
+</section>
 
 <section>
   <h2>מפת המערכת</h2>
@@ -119,6 +138,8 @@ body{margin:0}
     <div class="part"><b>בק</b><p>FastAPI עם JWT ושלושה תפקידים. החישובים (כתב כמויות, פרטי חלל ואלמנט) בפונקציות טהורות בלי תלות בשרת, ולכן קל לבדוק אותם. לקוח שמבקש כתב כמויות מקבל 403 מהשרת עצמו.</p></div>
     <div class="part"><b>תלת־ממד</b><p>react-three-fiber. הקואורדינטות בס"מ עם ציר Y למעלה, ומומרות למטרים. גובה הקירות הוא "הנחה לתצוגה" שמוצגת על המסך ולא נכנסת לשום חישוב. פירוק לשכבות מרים כל דיסציפלינה לגובה אחר.</p></div>
     <div class="part"><b>צ'אט</b><p>מסווג שאלות שאומן על 114 דוגמאות בעברית (TF-IDF + רגרסיה לוגיסטית, כתוב ב־numpy). הוא מזהה את סוג השאלה, מחלץ מזהים ושמות חדרים, ובונה תשובה רק מנתונים. מתחת לסף ביטחון הוא אומר "לא הבנתי" במקום לנחש.</p></div>
+    <div class="part"><b>עלויות והעמסות</b><p>מחיר מוקלד ידנית (אין מחירים בקובץ), אחוזי פחת, תקורות ובלתי צפוי לפרויקט ולכל דיסציפלינה. החישוב בפונקציה טהורה בבק על הכמות המדויקת. קבלן רואה מחיר ועלות ישירה; רק יזם רואה העמסות ועלות כוללת. מחיר ריק נשאר ריק, לא 0.</p></div>
+    <div class="part"><b>חוויה לפי תפקיד</b><p>לקוח: החללים שלי. קבלן: דף עבודה של כמויות ומחירים. יזם: סקירת פרויקט עם עלויות. לכל תפקיד צבע, לשוניות ומסך פתיחה משלו. עמוד אודות לכולם מסביר את הבעיה ואת הפתרון.</p></div>
     <div class="part"><b>פרונט</b><p>React + TypeScript + Vite, עיצוב כהה. כל מספר על המסך מגיע עם תגית סוג הנתון שלו, ולחיצה על שורה בכתב הכמויות מראה את הנוסחה, את האלמנטים ואת ה־src שלהם.</p></div>
   </div>
 </section>
@@ -167,7 +188,8 @@ body{margin:0}
 <section id="results">
   <h2>תוצאות</h2>
   <div class="results">
-    <div class="stat"><div class="n">61/61</div><div class="l">בדיקות בק עוברות, כולל כל מספרי הקבלה מ־docs/01 ו־docs/02</div></div>
+    <div class="stat"><div class="n">73/73</div><div class="l">בדיקות בק עוברות, כולל כל מספרי הקבלה מ־docs/01 ו־docs/02</div></div>
+    <div class="stat"><div class="n">1,763.74</div><div class="l">עלות כוללת במקרה הבדיקה של docs/01, בדיוק כמו במסמך</div></div>
     <div class="stat"><div class="n">403</div><div class="l">לקוח שמבקש כתב כמויות נחסם בשרת</div></div>
     <div class="stat"><div class="n">0.67</div><div class="l">דיוק המסווג על 30 שאלות שלא ראה באימון</div></div>
     <div class="stat"><div class="n">11/11</div><div class="l">שאלות צ'אט בבדיקה ידנית, מקצה לקצה דרך הפרונט</div></div>
@@ -199,7 +221,8 @@ npm run dev          # http://localhost:5173</pre></div>
 <section>
   <h2>משימות להמשך, לפיתוח שלכן בהדרכה</h2>
   <ul class="clean">
-    <li><b>הזנת מחירים והעמסות</b> (docs/01 שלב 4): פונקציה טהורה בבק, בדיקת הקבלה של 1,763.74, והרשאה ליזם בלבד.</li>
+    <li><b>שרת קבוע בענן</b>: קישור שעובד גם כשהמחשב כבוי.</li>
+    <li><b>שיפור הצ'אט</b>: עוד דוגמאות אימון, מדידה על מדגם גדול יותר.</li>
     <li><b>צ'אט עם LLM</b>: להחליף את המסווג במודל שפה שמקבל רק Facts מהשרת ועונה עם מקור.</li>
     <li><b>RAG</b>: embeddings להערות התכנית (<code>plan_notes</code>, <code>survey_notes</code>) וחיפוש סמנטי.</li>
     <li><b>ייצוא לאקסל</b> וטבלה מותאמת לטלפון.</li>

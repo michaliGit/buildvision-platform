@@ -66,6 +66,7 @@ def seed(db_path: Path = DB_PATH, plan_path: Path = PLAN_PATH) -> dict[str, int]
                 json TEXT NOT NULL
             );
             CREATE INDEX idx_elements_collection ON elements(collection);
+            CREATE TABLE IF NOT EXISTS cost_inputs (kind TEXT, key TEXT, value REAL, PRIMARY KEY(kind, key));
             """
         )
         for username, password, role, display in DEMO_USERS:

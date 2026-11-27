@@ -1,6 +1,6 @@
 import type { Boq, BoqRow, Fact, Role } from './api';
 
-export type Tab = 'overview' | 'boq' | 'space' | 'chat';
+export type Tab = 'overview' | 'boq' | 'space' | 'chat' | 'about';
 
 export interface RoleConfig {
   accent: string;
@@ -20,6 +20,7 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
     tabs: [
       { key: 'space', label: 'חללים' },
       { key: 'chat', label: "צ'אט" },
+      { key: 'about', label: 'אודות' },
     ],
     defaultTab: 'space',
     panelClass: 'panel narrow',
@@ -28,11 +29,12 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   contractor: {
     accent: '#fbbf24',
     subtitle: 'גיליון עבודה',
-    sees: 'כל מה שהלקוח רואה + כתב כמויות',
+    sees: 'כל מה שהלקוח רואה + כתב כמויות ומחירים',
     tabs: [
       { key: 'boq', label: 'כמויות' },
       { key: 'space', label: 'חלל' },
       { key: 'chat', label: "צ'אט" },
+      { key: 'about', label: 'אודות' },
     ],
     defaultTab: 'boq',
     panelClass: 'panel wide',
@@ -41,12 +43,13 @@ export const ROLE_CONFIG: Record<Role, RoleConfig> = {
   developer: {
     accent: '#8b5cf6',
     subtitle: 'סקירת פרויקט',
-    sees: 'הכול, כולל עלויות (בסבב 1: נדחה)',
+    sees: 'הכול, כולל עלויות והעמסות',
     tabs: [
       { key: 'overview', label: 'סקירה' },
       { key: 'boq', label: 'כמויות' },
       { key: 'space', label: 'חלל' },
       { key: 'chat', label: "צ'אט" },
+      { key: 'about', label: 'אודות' },
     ],
     defaultTab: 'overview',
     panelClass: 'panel wide',

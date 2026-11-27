@@ -1,6 +1,7 @@
 import type { Boq, RoomSummary } from '../api';
 import { boqKpis, disciplineCounts, type Kpi } from '../roles';
 import { FactValue, KindBadge, fmtNum, unitHe } from './KindBadge';
+import { MoneyCell, rowsWithoutPrice } from './Costs';
 
 /* ---------- client: "החללים שלי" ---------- */
 export function RoomCards({ rooms, selected, onSelect }: { rooms: RoomSummary[]; selected: string | null; onSelect: (id: string) => void }) {
@@ -94,16 +95,39 @@ export function Overview({ boq, rooms, boqError, onKpi }: { boq: Boq | null; roo
         ))}
       </div>
 
-      <div className="card deferred">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-          <strong>עלויות והעמסות</strong>
-          <span className="kind kind-missing">{boq?.costs?.status === 'deferred' || !boq?.costs ? 'נדחה' : boq.costs.status}</span>
+      {boq?.costs?.summary ? (
+        <div className="card cost-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+            <strong>עלויות והעמסות · פרויקט</strong>
+            {(() => {
+              const n = rowsWithoutPrice(boq.costs.summary.project);
+              return n === null ? null : (
+                <span className={`chip${n > 0 ? ' chip-warn' : ''}`}>
+                  <bdi className="num">{n}</bdi> שורות בלי מחיר
+                </span>
+              );
+            })()}
+          </div>
+          <div className="sum-grid" style={{ marginTop: 10 }}>
+            <strong>עלות כוללת</strong>
+            <MoneyCell fact={boq.costs.summary.project.total} />
+            <span className="muted">עלות למ״ר</span>
+            <MoneyCell fact={boq.costs.summary.project.per_m2} perM2 />
+            <span className="muted">עלות ישירה</span>
+            <MoneyCell fact={boq.costs.summary.project.direct} />
+          </div>
+          <p className="muted small" style={{ margin: '8px 0 0' }}>מחירים ואחוזים מוזנים ידנית בלשונית הכמויות · אין מחירים בקובץ</p>
+          {boq.costs.formula_note ? <p className="formula-note">{boq.costs.formula_note}</p> : null}
         </div>
-        <p className="muted" style={{ margin: '6px 0 0' }}>ייכנס בסבב הבא · הזנה ידנית בלבד, אין מחירים בקובץ</p>
-        <div style={{ marginTop: 8 }}>
-          <KindBadge kind="manual" />
+      ) : (
+        <div className="card deferred">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+            <strong>עלויות והעמסות</strong>
+            <KindBadge kind="missing" />
+          </div>
+          <p className="muted" style={{ margin: '6px 0 0' }}>אין נתוני עלויות מהשרת · הזנה ידנית בלבד, אין מחירים בקובץ</p>
         </div>
-      </div>
+      )}
 
       <div className="section" style={{ marginTop: 16 }}>
         <h3>מי רואה מה</h3>

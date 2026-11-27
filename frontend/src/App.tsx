@@ -6,6 +6,7 @@ import { ElementPanel, RoomPanel } from './components/DetailsPanel';
 import { BoqPanel } from './components/BoqPanel';
 import { ChatPanel } from './components/ChatPanel';
 import { BoqSummary, Overview, RoomCards } from './components/RoleViews';
+import { About } from './components/About';
 import { ROLE_CONFIG, type Kpi, type Tab } from './roles';
 
 const isRoomId = (id: string) => /^R\d+$/.test(id);
@@ -48,6 +49,8 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
   const [boqFocus, setBoqFocus] = useState<{ items: string[]; ids: string[]; nonce: number } | null>(null);
   const hasTab = (t: Tab) => cfg.tabs.some((x) => x.key === t);
   const canBoq = hasTab('boq');
+  const [boqRev, setBoqRev] = useState(0);
+  const refreshBoq = useCallback(() => setBoqRev((r) => r + 1), []);
 
   useEffect(() => {
     api
@@ -64,7 +67,7 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
         .then(setBoqAll)
         .catch((e) => setBoqError(e instanceof ApiError ? (e.status === 403 ? 'אין הרשאה' : e.message) : 'שגיאה בטעינת הכמויות'));
     }
-  }, [canBoq]);
+  }, [canBoq, boqRev]);
 
   const highlight = useMemo(() => new Set(highlightIds), [highlightIds]);
 
@@ -167,11 +170,12 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
           <div className="panel-body">
             {tab === 'overview' && hasTab('overview') && <Overview boq={boqAll} rooms={rooms} boqError={boqError} onKpi={jumpToKpi} />}
             {tab === 'space' && spaceView}
+            {tab === 'about' && <About role={user.role} />}
             {/* BOQ and chat stay mounted so their state survives tab switches */}
             {canBoq && (
               <div hidden={tab !== 'boq'}>
                 {user.role === 'contractor' && <BoqSummary boq={boqAll} onKpi={jumpToKpi} />}
-                <BoqPanel rooms={rooms} onHighlight={setHighlightIds} onOpenElement={openElement} focus={boqFocus} />
+                <BoqPanel rooms={rooms} onHighlight={setHighlightIds} onOpenElement={openElement} focus={boqFocus} role={user.role} onChanged={refreshBoq} />
               </div>
             )}
             <div hidden={tab !== 'chat'} style={{ height: '100%' }}>

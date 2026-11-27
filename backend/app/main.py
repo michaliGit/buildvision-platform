@@ -16,11 +16,14 @@ from app.logic.plan_view import plan_geometry
 from app.logic.plan_index import room_by_id
 from app.logic.rooms import list_rooms, room_details
 from app.store import load_plan
+from app import cost_store
+from app.logic.costs import PERCENT_FIELDS, PERCENT_SCOPES, apply_costs, row_key
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_plan()
+    cost_store.ensure_table()
     ensure_model()
     yield
 
@@ -99,9 +102,41 @@ def get_boq(discipline: str | None = Query(None), room: str | None = Query(None)
     if room and room_by_id(plan, room) is None:
         raise HTTPException(404, "חלל לא נמצא")
     result = build_boq(plan, discipline=discipline, room=room)
-    if PERMISSIONS[user["role"]]["costs"]:
-        result["costs"] = {"status": "deferred"}
+    net_area = sum(r["area"] for r in plan["rooms"])
+    result["costs"] = apply_costs(result, cost_store.get_prices(), cost_store.get_percents(),
+                                  user["role"], net_area)
     return result
+
+
+class PriceIn(BaseModel):
+    key: str
+    price: float | None = None
+
+
+class PercentIn(BaseModel):
+    scope: str
+    field: str
+    value: float | None = None
+
+
+@app.put("/api/costs/price")
+def put_price(body: PriceIn, user: dict = Depends(require_permission("boq"))):
+    if body.price is not None and body.price < 0:
+        raise HTTPException(400, "מחיר שלילי לא מותר")
+    if body.key not in {row_key(r) for r in build_boq(load_plan())["rows"]}:
+        raise HTTPException(404, "סעיף לא נמצא")
+    cost_store.set_value("price", body.key, body.price)
+    return {"ok": True}
+
+
+@app.put("/api/costs/percent")
+def put_percent(body: PercentIn, user: dict = Depends(require_permission("costs"))):
+    if body.scope not in PERCENT_SCOPES or body.field not in PERCENT_FIELDS:
+        raise HTTPException(400, "scope או field לא מוכרים")
+    if body.value is not None and body.value < 0:
+        raise HTTPException(400, "אחוז שלילי לא מותר")
+    cost_store.set_value("percent", f"{body.scope}.{body.field}", body.value)
+    return {"ok": True}
 
 
 @app.post("/api/chat")

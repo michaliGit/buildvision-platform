@@ -35,9 +35,9 @@ def test_boq_roles(client, auth):
     assert client.get("/api/boq", headers=auth["client"]).status_code == 403
     r = client.get("/api/boq", headers=auth["contractor"])
     assert r.status_code == 200
-    assert "costs" not in r.json()
+    assert "percents" not in r.json()["costs"]
     r = client.get("/api/boq", headers=auth["developer"])
-    assert r.json()["costs"] == {"status": "deferred"}
+    assert "percents" in r.json()["costs"] and "formula_note" in r.json()["costs"]
 
 
 def test_boq_room_filter_api(client, auth):

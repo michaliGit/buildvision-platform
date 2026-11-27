@@ -10,6 +10,8 @@ export interface Fact<T = number | string | string[] | boolean | null> {
   formula?: string | null;
   src?: string | null;
   note?: string | null;
+  /** e.g. "מעל 100%" */
+  warning?: string | null;
 }
 
 export type Role = 'client' | 'contractor' | 'developer';
@@ -92,12 +94,46 @@ export interface BoqRow {
   quantity: Fact<number>;
   elements: { id: string; value: number | null; src?: string | null }[];
   secondary: Fact<number> | null;
+  /** stable row key for PUT /api/costs/price */
+  key?: string;
+  /** contractor: price, direct · developer: + waste, overhead, contingency, total */
+  cost?: RowCost;
+}
+
+export type CostField = 'waste' | 'overhead' | 'contingency';
+
+export interface RowCost {
+  price: Fact<number>;
+  direct: Fact<number>;
+  waste?: Fact<number>;
+  overhead?: Fact<number>;
+  contingency?: Fact<number>;
+  total?: Fact<number>;
+}
+
+export interface CostSummary {
+  direct?: Fact<number>;
+  waste?: Fact<number>;
+  overhead?: Fact<number>;
+  contingency?: Fact<number>;
+  total?: Fact<number>;
+  per_m2?: Fact<number>;
+  rows_without_price?: Fact<number> | number;
+}
+
+export type Percents = Partial<Record<CostField, Fact<number> | null>>;
+
+export interface BoqCosts {
+  status?: string;
+  percents?: { project: Percents; disciplines: Record<string, Percents | null> };
+  summary?: { project: CostSummary; disciplines: Record<string, CostSummary> };
+  formula_note?: string;
 }
 
 export interface Boq {
   rows: BoqRow[];
   notes: { discipline: string | null; text: string; kind: Kind }[];
-  costs?: { status: string };
+  costs?: BoqCosts;
   /** Server-computed totals for summary tiles (partitions_length, elec_points). */
   totals?: Record<string, Fact<number> & { ids?: string[] }>;
 }
@@ -189,6 +225,10 @@ export const api = {
     const qs = q.toString();
     return request<Boq>(`/boq${qs ? `?${qs}` : ''}`);
   },
+  putPrice: (key: string, price: number | null) =>
+    request<unknown>('/costs/price', { method: 'PUT', body: JSON.stringify({ key, price }) }),
+  putPercent: (scope: string, field: CostField, value: number | null) =>
+    request<unknown>('/costs/percent', { method: 'PUT', body: JSON.stringify({ scope, field, value }) }),
   chat: (message: string) => request<ChatReply>('/chat', { method: 'POST', body: JSON.stringify({ message }) }),
 };
 
