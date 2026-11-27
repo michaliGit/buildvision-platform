@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BuildVision · איך נבנה סבב 1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; a map of the system on top, then one card per AI skill, then results and next steps. */
+:root{
+  --bg:#F4F6FA; --surface:#FFFFFF; --surface2:#EEF2F8; --line:rgba(15,23,42,.10);
+  --fg:#0F172A; --muted:#55607A; --accent:#0891B2; --accent2:#7C3AED;
+  --ok:#059669; --warn:#B45309; --bad:#DC2626;
+  --f-ui:"Heebo",system-ui,"Segoe UI",Arial,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0F17; --surface:#121826; --surface2:#172033; --line:rgba(148,163,184,.14);
+  --fg:#E6EAF2; --muted:#8B95A7; --accent:#22D3EE; --accent2:#A78BFA;
+  --ok:#34D399; --warn:#FBBF24; --bad:#F87171; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0F17; --surface:#121826; --surface2:#172033; --line:rgba(148,163,184,.14);
+  --fg:#E6EAF2; --muted:#8B95A7; --accent:#22D3EE; --accent2:#A78BFA;
+  --ok:#34D399; --warn:#FBBF24; --bad:#F87171; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:16px;line-height:1.65}
+.wrap{max-width:880px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:clamp(28px,5vw,40px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:22px;font-weight:700}
+h3{font-size:17px;font-weight:700}
+p{margin:0;max-width:68ch}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--accent);font-weight:700}
+.lead{color:var(--muted);font-size:17px}
+section{display:flex;flex-direction:column;gap:16px}
+code,.mono{font-family:var(--f-mono);font-size:.88em;direction:ltr;unicode-bidi:isolate}
+code{background:var(--surface2);padding:1px 6px;border-radius:5px}
+.map{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;overflow-x:auto}
+.map svg{display:block;min-width:620px;width:100%;height:auto}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:14px}
+.skill{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.skill .tag{align-self:flex-start;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;color:var(--accent2);background:color-mix(in srgb,var(--accent2) 14%,transparent)}
+.skill dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14.5px}
+.skill dt{color:var(--muted);font-weight:500}
+.skill dd{margin:0;min-width:0}
+.parts{display:flex;flex-direction:column;gap:10px}
+.part{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.part:first-child{border-top:0}
+.part b{color:var(--accent)}
+@media (max-width:560px){.part{grid-template-columns:1fr;gap:4px}}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .l{font-size:13px;color:var(--muted)}
+.run{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto}
+.run pre{margin:0;font-family:var(--f-mono);font-size:13.5px;direction:ltr;text-align:left;line-height:1.7}
+ul.clean{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.pending{color:var(--warn)}
+body{margin:0}
+</style>
+</head>
+<body>
+
+<div class="wrap" dir="rtl" lang="he">
+
+<header style="display:flex;flex-direction:column;gap:12px">
+  <span class="eyebrow">BUILDVISION · סבב 1 · 27.11.2026</span>
+  <h1>איך נבנתה המערכת, ובאילו מיומנויות AI</h1>
+  <p class="lead">Claude בנה את סבב 1 לבד, כמנהל של שני סוכני משנה שעבדו במקביל. הדף מסביר כל חלק במערכת, ובעיקר את מיומנויות ה־AI שבהן השתמשנו ולמה בחרנו בהן.</p>
+</header>
+
+<section>
+  <h2>מפת המערכת</h2>
+  <div class="map">
+    <svg viewBox="0 0 760 300" role="img" aria-label="דפדפן עם React מתחבר ל־FastAPI, שקורא מ־SQLite שנטען מ־plan-data.json">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+      <g font-family="Heebo,Arial" font-size="14" fill="var(--fg)">
+        <rect x="520" y="30" width="220" height="230" rx="12" fill="var(--surface2)" stroke="var(--accent)"/>
+        <text x="630" y="58" text-anchor="middle" font-weight="700">frontend · React</text>
+        <text x="630" y="88" text-anchor="middle" fill="var(--muted)">התחברות ובחירת תפקיד</text>
+        <text x="630" y="118" text-anchor="middle" fill="var(--muted)">תלת־ממד (react-three-fiber)</text>
+        <text x="630" y="148" text-anchor="middle" fill="var(--muted)">לוח נתונים לחלל ולאלמנט</text>
+        <text x="630" y="178" text-anchor="middle" fill="var(--muted)">כתב כמויות</text>
+        <text x="630" y="208" text-anchor="middle" fill="var(--muted)">צ'אט</text>
+        <text x="630" y="240" text-anchor="middle" font-size="12" fill="var(--muted)">localhost:5173</text>
+
+        <rect x="270" y="30" width="200" height="230" rx="12" fill="var(--surface2)" stroke="var(--accent2)"/>
+        <text x="370" y="58" text-anchor="middle" font-weight="700">backend · FastAPI</text>
+        <text x="370" y="88" text-anchor="middle" fill="var(--muted)">JWT + 3 תפקידים</text>
+        <text x="370" y="118" text-anchor="middle" fill="var(--muted)">הרשאות נאכפות בשרת</text>
+        <text x="370" y="148" text-anchor="middle" fill="var(--muted)">לוגיקה: פונקציות טהורות</text>
+        <text x="370" y="178" text-anchor="middle" fill="var(--muted)">מסווג שאלות מאומן</text>
+        <text x="370" y="208" text-anchor="middle" fill="var(--muted)">בדיקות קבלה (pytest)</text>
+        <text x="370" y="240" text-anchor="middle" font-size="12" fill="var(--muted)">localhost:8000</text>
+
+        <rect x="20" y="70" width="200" height="60" rx="10" fill="var(--surface2)" stroke="var(--line)"/>
+        <text x="120" y="98" text-anchor="middle" font-weight="700">SQLite</text>
+        <text x="120" y="118" text-anchor="middle" font-size="12" fill="var(--muted)">buildvision.db</text>
+        <rect x="20" y="170" width="200" height="60" rx="10" fill="var(--surface2)" stroke="var(--line)"/>
+        <text x="120" y="198" text-anchor="middle" font-weight="700">plan-data.json</text>
+        <text x="120" y="218" text-anchor="middle" font-size="12" fill="var(--muted)">לקריאה בלבד</text>
+
+        <line x1="515" y1="130" x2="476" y2="130" stroke="var(--muted)" marker-end="url(#ar)"/>
+        <line x1="476" y1="160" x2="515" y2="160" stroke="var(--muted)" marker-end="url(#ar)"/>
+        <text x="495" y="120" text-anchor="middle" font-size="11" fill="var(--muted)">/api</text>
+        <line x1="265" y1="100" x2="226" y2="100" stroke="var(--muted)" marker-end="url(#ar)"/>
+        <line x1="120" y1="166" x2="120" y2="136" stroke="var(--muted)" marker-end="url(#ar)"/>
+        <text x="132" y="156" font-size="11" fill="var(--muted)">seed</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section>
+  <h2>איך נבנה כל חלק</h2>
+  <div class="parts">
+    <div class="part"><b>חוזה API</b><p>לפני שורת קוד אחת כתבתי את <code>docs/api-contract.md</code>: כל נתיב, כל תשובה, ומי מורשה לראות מה. שני הסוכנים בנו מולו במקביל, בלי לחכות זה לזה.</p></div>
+    <div class="part"><b>נתונים</b><p>סקריפט seed טוען את <code>plan-data.json</code> ל־SQLite. כל ערך שיוצא מה־API עטוף ב־Fact עם סוג: מהקובץ, מחושב, הנחה לתצוגה, או אין בקובץ. ערך חסר הוא <code>null</code>, לא 0.</p></div>
+    <div class="part"><b>בק</b><p>FastAPI עם JWT ושלושה תפקידים. החישובים (כתב כמויות, פרטי חלל ואלמנט) בפונקציות טהורות בלי תלות בשרת, ולכן קל לבדוק אותם. לקוח שמבקש כתב כמויות מקבל 403 מהשרת עצמו.</p></div>
+    <div class="part"><b>תלת־ממד</b><p>react-three-fiber. הקואורדינטות בס"מ עם ציר Y למעלה, ומומרות למטרים. גובה הקירות הוא "הנחה לתצוגה" שמוצגת על המסך ולא נכנסת לשום חישוב. פירוק לשכבות מרים כל דיסציפלינה לגובה אחר.</p></div>
+    <div class="part"><b>צ'אט</b><p>מסווג שאלות שאומן על 114 דוגמאות בעברית (TF-IDF + רגרסיה לוגיסטית, כתוב ב־numpy). הוא מזהה את סוג השאלה, מחלץ מזהים ושמות חדרים, ובונה תשובה רק מנתונים. מתחת לסף ביטחון הוא אומר "לא הבנתי" במקום לנחש.</p></div>
+    <div class="part"><b>פרונט</b><p>React + TypeScript + Vite, עיצוב כהה. כל מספר על המסך מגיע עם תגית סוג הנתון שלו, ולחיצה על שורה בכתב הכמויות מראה את הנוסחה, את האלמנטים ואת ה־src שלהם.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>מיומנויות ה־AI שהשתמשנו בהן, ולמה</h2>
+  <div class="skills">
+    <article class="skill"><span class="tag">הקשר קבוע</span><h3>CLAUDE.md כזיכרון של הפרויקט</h3>
+      <dl><dt>מה</dt><dd>קובץ שכל שיחה עם Claude קוראת בהתחלה: מטרות, ארכיטקטורה, תפקידים וכללי ברזל לנתונים.</dd>
+      <dt>למה</dt><dd>בלי זה, כל שיחה מתחילה מאפס, והמודל ממלא חורים בניחושים. הכללים ("אסור להמציא מספר") הם מה שמונע הזיות.</dd></dl></article>
+
+    <article class="skill"><span class="tag">ספציפיקציה קודם</span><h3>חוזה לפני קוד</h3>
+      <dl><dt>מה</dt><dd><code>docs/api-contract.md</code> נכתב לפני שהסוכנים התחילו.</dd>
+      <dt>למה</dt><dd>מודל עובד הכי טוב מול הגדרה ברורה. חוזה משותף הוא מה שמאפשר לשני סוכנים לבנות במקביל ולהתחבר בסוף.</dd></dl></article>
+
+    <article class="skill"><span class="tag">תזמור</span><h3>סוכני משנה ומנהל</h3>
+      <dl><dt>מה</dt><dd>סוכן לבק וסוכן לפרונט רצו במקביל. Claude הראשי כתב לכל אחד תדריך, קיבל דוח, ובדק.</dd>
+      <dt>למה</dt><dd>חוסך זמן, וכל סוכן מקבל הקשר נקי וממוקד. המחיר: הסוכן יודע רק מה שבתדריך, ולכן התדריך חייב להיות מדויק.</dd></dl></article>
+
+    <article class="skill"><span class="tag">הכוונה תוך כדי</span><h3>שינוי כיוון לסוכן שרץ</h3>
+      <dl><dt>מה</dt><dd>כשביקשת עיצוב כהה ומודרני, ההוראה נשלחה לסוכן הפרונט בזמן שעבד, בלי לעצור אותו.</dd>
+      <dt>למה</dt><dd>סוכן הוא לא "שגר ושכח". אפשר לתקן כיוון באמצע, ועדיף מוקדם.</dd></dl></article>
+
+    <article class="skill"><span class="tag">אימות</span><h3>בדיקות קבלה מהמסמכים</h3>
+      <dl><dt>מה</dt><dd>כל מספר ב־<code>docs/01</code> וב־<code>docs/02</code> הפך לבדיקה אוטומטית. ההוראה: אם מספר לא יוצא, מתקנים את הבאג ולא את הבדיקה.</dd>
+      <dt>למה</dt><dd>קוד של AI נראה נכון גם כשהוא לא. בדיקה מול מספר ידוע היא הדרך היחידה לדעת.</dd></dl></article>
+
+    <article class="skill"><span class="tag">מעקות בטיחות</span><h3>מקור לכל מספר</h3>
+      <dl><dt>מה</dt><dd>כל ערך נושא סוג (מהקובץ / מחושב / הנחה לתצוגה / אין בקובץ), נוסחה ו־src.</dd>
+      <dt>למה</dt><dd>זה העיקרון שעליו בנוי גם RAG: תשובה שאפשר לעקוב אחרי המקור שלה היא תשובה שאפשר לסמוך עליה.</dd></dl></article>
+
+    <article class="skill"><span class="tag">למידת מכונה</span><h3>מסווג שאלות מאומן</h3>
+      <dl><dt>מה</dt><dd>דוגמאות מתויגות, חלוקה לאימון ובדיקה, מדד דיוק, וסף ביטחון שמתחתיו המערכת אומרת "לא הבנתי".</dd>
+      <dt>למה</dt><dd>מלמד את היסודות שעליהם עומדים גם LLM ו־embeddings: נתוני אימון, הכללה, ומדידה. וגם: מודל קטן ומדוד עדיף על מודל גדול שממציא.</dd></dl></article>
+
+    <article class="skill"><span class="tag">אבטחה</span><h3>הרשאות בשרת, גם בצ'אט</h3>
+      <dl><dt>מה</dt><dd>הצ'אט בודק את התפקיד לפני שהוא עונה על כמויות. לקוח מקבל "אין הרשאה".</dd>
+      <dt>למה</dt><dd>צ'אט הוא דלת אחורית קלאסית לנתונים. אם ההרשאה רק בפרונט, שאלה בניסוח נכון עוקפת אותה.</dd></dl></article>
+
+    <article class="skill"><span class="tag">עבודה עם Git</span><h3>ענף, commits קטנים, PR</h3>
+      <dl><dt>מה</dt><dd><code>feat/round1-demo</code> נפרד מ־<code>main</code>, נכנס דרך Pull Request אחרי סקירה שלכן.</dd>
+      <dt>למה</dt><dd>כשה־AI כותב הרבה קוד מהר, הסקירה האנושית היא נקודת הבקרה. PR קטן נסקר טוב יותר.</dd></dl></article>
+  </div>
+</section>
+
+<section id="results">
+  <h2>תוצאות</h2>
+  <div class="results">
+    <div class="stat"><div class="n">61/61</div><div class="l">בדיקות בק עוברות, כולל כל מספרי הקבלה מ־docs/01 ו־docs/02</div></div>
+    <div class="stat"><div class="n">403</div><div class="l">לקוח שמבקש כתב כמויות נחסם בשרת</div></div>
+    <div class="stat"><div class="n">0.67</div><div class="l">דיוק המסווג על 30 שאלות שלא ראה באימון</div></div>
+    <div class="stat"><div class="n">11/11</div><div class="l">שאלות צ'אט בבדיקה ידנית, מקצה לקצה דרך הפרונט</div></div>
+  </div>
+  <h3>מה למדנו בדרך</h3>
+  <ul class="clean">
+    <li><b>הדיסק התמלא.</b> scikit-learn לא הותקן, אז סוכן הבק כתב את אותה שיטה בעצמו עם numpy (TF-IDF על רצפי אותיות ורגרסיה לוגיסטית). הוא דיווח על זה במקום להסתיר. כך צריך לעבוד עם סוכן: לדרוש דוח על כל סטייה.</li>
+    <li><b>הסוכן טעה ותיקן.</b> בדיקה אחת נכשלה כי העמוד PS1 נספר כמחיצה. הבאג היה בקוד, לא בנתונים, ונמצא רק בגלל שהבדיקה השוותה למספר ידוע.</li>
+    <li><b>הבדיקה של המנהל מצאה מה שהסוכן פספס.</b> "כמה דלתות יש?" לא זוהתה, ו"חדר הישיבות" לא נמצא בגלל ה־ה' בהתחלה. הוספנו 4 דוגמאות אימון ותיקנו את זיהוי החדר.</li>
+    <li><b>סוכן שבר כלל מ־CLAUDE.md, והכלל צדק.</b> בחוויה לפי תפקיד, סוכן הפרונט חישב סכום מחיצות בדפדפן לפי תחילית השם, ופספס "חיפוי קיר בגבס" ו"קיר זכוכית": 50.93 במקום 59.39. הוא עצמו סימן שזה סותר את הכלל "חישובים בבק". החישוב עבר לשרת, עם בדיקה מול המספר מהמסמך.</li>
+    <li><b>מדד על מעט נתונים קופץ.</b> אחרי שהוספנו דוגמאות, הדיוק ירד מ־0.77 ל־0.67, כי החלוקה לאימון ובדיקה השתנתה. ב־30 שאלות כל שאלה היא 3%. המסקנה: צריך יותר נתונים לפני שסומכים על המספר.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>איך מריצים</h2>
+  <div class="run"><pre>cd backend
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\python -m app.seed
+.venv\Scripts\uvicorn app.main:app --reload --port 8000
+
+cd frontend
+npm install
+npm run dev          # http://localhost:5173</pre></div>
+  <p>משתמשי דמו: <code>client</code> / <code>contractor</code> / <code>developer</code>, הסיסמה היא השם ואחריו <code>123</code>.</p>
+</section>
+
+<section>
+  <h2>משימות להמשך, לפיתוח שלכן בהדרכה</h2>
+  <ul class="clean">
+    <li><b>הזנת מחירים והעמסות</b> (docs/01 שלב 4): פונקציה טהורה בבק, בדיקת הקבלה של 1,763.74, והרשאה ליזם בלבד.</li>
+    <li><b>צ'אט עם LLM</b>: להחליף את המסווג במודל שפה שמקבל רק Facts מהשרת ועונה עם מקור.</li>
+    <li><b>RAG</b>: embeddings להערות התכנית (<code>plan_notes</code>, <code>survey_notes</code>) וחיפוש סמנטי.</li>
+    <li><b>ייצוא לאקסל</b> וטבלה מותאמת לטלפון.</li>
+  </ul>
+</section>
+
+</div>
+
+</body>
+</html>

@@ -80,6 +80,11 @@ export function Login({ onLogin }: { onLogin: (u: User) => void }) {
           </button>
         </form>
         {error ? <p className="error" role="alert">{error}</p> : null}
+        <p className="muted small" style={{ margin: '16px 0 0', textAlign: 'center' }}>
+          <a href="/explainer.html" target="_blank" rel="noopener" style={{ color: 'var(--accent)' }}>
+            איך נבנתה המערכת ובאילו מיומנויות AI
+          </a>
+        </p>
       </div>
     </div>
   );
