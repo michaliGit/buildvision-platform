@@ -1,0 +1,114 @@
+{"text": "מה השטח של חדר המנכל?", "intent": "room_area"}
+{"text": "כמה מטר רבוע יש במחסן", "intent": "room_area"}
+{"text": "מה גודל חדר הישיבות", "intent": "room_area"}
+{"text": "כמה מ\"ר זה R3", "intent": "room_area"}
+{"text": "מה שטח הרצפה של R5", "intent": "room_area"}
+{"text": "תגיד לי את השטח של הקבלה", "intent": "room_area"}
+{"text": "כמה גדול החדר של המכירות", "intent": "room_area"}
+{"text": "מה ההיקף של חדר R7", "intent": "room_area"}
+{"text": "מה המידות של המטבחון", "intent": "room_area"}
+{"text": "שטח של R1 בבקשה", "intent": "room_area"}
+{"text": "כמה מטרים רבועים יש בחדר R8", "intent": "room_area"}
+{"text": "האם חדר המנהל גדול? מה השטח שלו", "intent": "room_area"}
+{"text": "מה היקף הקירות של המחסן", "intent": "room_area"}
+{"text": "גודל החלל R2", "intent": "room_area"}
+{"text": "כמה שטח יש לכספת", "intent": "room_area"}
+{"text": "מה השטח הנטו של חדר ההתקנות", "intent": "room_area"}
+{"text": "באיזה גודל המשרד של המנכל", "intent": "room_area"}
+{"text": "שטח חדר השירות", "intent": "room_area"}
+{"text": "מה יש בחדר המנכל?", "intent": "room_contents"}
+{"text": "אילו רהיטים יש במחסן", "intent": "room_contents"}
+{"text": "כמה שקעים יש בחדר הישיבות", "intent": "room_contents"}
+{"text": "מה נמצא בתוך R3", "intent": "room_contents"}
+{"text": "כמה חלונות יש ב-R1", "intent": "room_contents"}
+{"text": "אילו דלתות יש לחדר המכירות", "intent": "room_contents"}
+{"text": "מה התכולה של הקבלה", "intent": "room_contents"}
+{"text": "כמה נקודות חשמל בחדר R5", "intent": "room_contents"}
+{"text": "תפרט מה יש במטבחון", "intent": "room_contents"}
+{"text": "איזה ריהוט יש בחדר של המנהל", "intent": "room_contents"}
+{"text": "יש חלונות בחדר המנכל?", "intent": "room_contents"}
+{"text": "מה מותקן בחדר R4", "intent": "room_contents"}
+{"text": "רשימת האלמנטים בתוך המחסן", "intent": "room_contents"}
+{"text": "כמה כיסאות ושולחנות יש בהמתנה", "intent": "room_contents"}
+{"text": "מה הציוד בחדר השירות", "intent": "room_contents"}
+{"text": "אילו פריטים נמצאים ב-R2", "intent": "room_contents"}
+{"text": "מה יש בכספת", "intent": "room_contents"}
+{"text": "כמה דלתות מובילות לחדר R6", "intent": "room_contents"}
+{"text": "ספר לי על P1", "intent": "element_info"}
+{"text": "מה העובי של מחיצה P3", "intent": "element_info"}
+{"text": "מה הגובה של הדלת D1", "intent": "element_info"}
+{"text": "פרטים על חלון WN1", "intent": "element_info"}
+{"text": "מה זה E12", "intent": "element_info"}
+{"text": "מה הרוחב של הכנף בדלת D4", "intent": "element_info"}
+{"text": "איזה סוג אלמנט הוא S2", "intent": "element_info"}
+{"text": "מה המקור של F3", "intent": "element_info"}
+{"text": "תן לי מידע על העמוד C1", "intent": "element_info"}
+{"text": "מה הרדיוס של C2", "intent": "element_info"}
+{"text": "מה האורך של מחיצה P5", "intent": "element_info"}
+{"text": "לאיזה חדר שייך החלון WN7", "intent": "element_info"}
+{"text": "מה התיאור של נקודת החשמל E5", "intent": "element_info"}
+{"text": "מה גובה ההתקנה של E30", "intent": "element_info"}
+{"text": "האם P2 מגבס", "intent": "element_info"}
+{"text": "תאר את הכניסה EN1", "intent": "element_info"}
+{"text": "בין אילו חדרים מחברת הדלת D2", "intent": "element_info"}
+{"text": "מה המידות של הרהיט F10", "intent": "element_info"}
+{"text": "כמה מטר מחיצות גבס יש בפרויקט", "intent": "boq_quantity"}
+{"text": "מה הכמות של מחיצות הגבס", "intent": "boq_quantity"}
+{"text": "כמה דלתות יש בסך הכול", "intent": "boq_quantity"}
+{"text": "כמה חלונות צריך להזמין", "intent": "boq_quantity"}
+{"text": "מה אורך קווי המערכות הכולל", "intent": "boq_quantity"}
+{"text": "כמה נקודות חשמל יש בכל הקומה", "intent": "boq_quantity"}
+{"text": "תן לי את כתב הכמויות", "intent": "boq_quantity"}
+{"text": "מה סך אורך המחיצות", "intent": "boq_quantity"}
+{"text": "כמה עמודים יש בבניין", "intent": "boq_quantity"}
+{"text": "מה השטח הכולל של כל החללים", "intent": "boq_quantity"}
+{"text": "כמה שקעים צריך לקנות לכל המשרד", "intent": "boq_quantity"}
+{"text": "כמה פריטי ריהוט יש בסך הכול", "intent": "boq_quantity"}
+{"text": "מה הכמויות לחשמל", "intent": "boq_quantity"}
+{"text": "סיכום כמויות לאדריכלות", "intent": "boq_quantity"}
+{"text": "כמה מטר אורך של קיר זכוכית", "intent": "boq_quantity"}
+{"text": "מה הרוחב הכולל של החלונות", "intent": "boq_quantity"}
+{"text": "כמויות לקבלן בבקשה", "intent": "boq_quantity"}
+{"text": "כמה מטר רבוע היטל של הקירות הקיימים", "intent": "boq_quantity"}
+{"text": "מה חסר בקובץ?", "intent": "missing_data"}
+{"text": "אילו נתונים אין בתכנית", "intent": "missing_data"}
+{"text": "מה גובה התקרה", "intent": "missing_data"}
+{"text": "מה גובה הקירות", "intent": "missing_data"}
+{"text": "יש נתונים על השלד והבטון?", "intent": "missing_data"}
+{"text": "מה המחיר של המחיצות", "intent": "missing_data"}
+{"text": "כמה זה עולה", "intent": "missing_data"}
+{"text": "מה הרכב השכבות של הקיר", "intent": "missing_data"}
+{"text": "כמה קומות יש בבניין", "intent": "missing_data"}
+{"text": "איזה מידע לא קיים בנתונים", "intent": "missing_data"}
+{"text": "מה הנפח של החדר", "intent": "missing_data"}
+{"text": "יש מפלסים בקובץ?", "intent": "missing_data"}
+{"text": "מה העלות הכוללת של הפרויקט", "intent": "missing_data"}
+{"text": "כמה ברזל וזיון יש בשלד", "intent": "missing_data"}
+{"text": "מה חסר לי כדי לתמחר", "intent": "missing_data"}
+{"text": "למה אין גובה למחיצה", "intent": "missing_data"}
+{"text": "אילו שדות ריקים בקובץ הנתונים", "intent": "missing_data"}
+{"text": "מה לא ידוע על הבניין", "intent": "missing_data"}
+{"text": "מה השטח במטרים של חדר R4", "intent": "room_area"}
+{"text": "כמה גדול חדר R6", "intent": "room_area"}
+{"text": "השטח של המשרד של המכירות", "intent": "room_area"}
+{"text": "תן שטח והיקף של R2", "intent": "room_area"}
+{"text": "מה יש בתוך המשרד של המנכל", "intent": "room_contents"}
+{"text": "כמה רהיטים בחדר R3", "intent": "room_contents"}
+{"text": "פירוט התכולה של חדר הישיבות", "intent": "room_contents"}
+{"text": "אילו נקודות חשמל וחלונות יש במחסן", "intent": "room_contents"}
+{"text": "מה הסוג של האלמנט P7", "intent": "element_info"}
+{"text": "פרטי האלמנט D3", "intent": "element_info"}
+{"text": "מה ההערות של החלון WN4", "intent": "element_info"}
+{"text": "לאיזה קיר מחובר השקע E20", "intent": "element_info"}
+{"text": "כמה מטר אורך יש לכל קווי המערכות", "intent": "boq_quantity"}
+{"text": "סך הכול נקודות חשמל בפרויקט", "intent": "boq_quantity"}
+{"text": "מה כמות הדלתות והחלונות בפרויקט", "intent": "boq_quantity"}
+{"text": "כמה מטר אורך מחיצה אקוסטית", "intent": "boq_quantity"}
+{"text": "כמה עולה הבנייה", "intent": "missing_data"}
+{"text": "מה מחיר המטר של הגבס", "intent": "missing_data"}
+{"text": "יש מידע על הבטון בתקרה", "intent": "missing_data"}
+{"text": "באיזו קומה נמצא המשרד", "intent": "missing_data"}
+{"text": "כמה דלתות יש?", "intent": "boq_quantity"}
+{"text": "כמה חלונות יש?", "intent": "boq_quantity"}
+{"text": "כמה מחיצות יש?", "intent": "boq_quantity"}
+{"text": "כמה עמודים יש?", "intent": "boq_quantity"}
