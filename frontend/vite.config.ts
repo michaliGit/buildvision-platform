@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    // Allow the temporary Cloudflare tunnel hostname when sharing the demo externally.
+    allowedHosts: ['.trycloudflare.com'],
     proxy: {
       '/api': { target: 'http://localhost:8000', changeOrigin: true },
     },

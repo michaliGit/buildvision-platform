@@ -16,10 +16,12 @@ REPO_DIR = BACKEND_DIR.parent
 PLAN_PATH = Path(os.environ.get("BV_PLAN_PATH", REPO_DIR / "docs" / "plan-data.json"))
 DB_PATH = Path(os.environ.get("BV_DB_PATH", BACKEND_DIR / "buildvision.db"))
 
+# Default demo passwords are for local work only. When the system is shared outside
+# (tunnel), set BV_PW_CLIENT / BV_PW_CONTRACTOR / BV_PW_DEVELOPER and re-run the seed.
 DEMO_USERS = [
-    ("client", "client123", "client", "לקוח"),
-    ("contractor", "contractor123", "contractor", "קבלן"),
-    ("developer", "developer123", "developer", "יזם"),
+    ("client", os.environ.get("BV_PW_CLIENT", "client123"), "client", "לקוח"),
+    ("contractor", os.environ.get("BV_PW_CONTRACTOR", "contractor123"), "contractor", "קבלן"),
+    ("developer", os.environ.get("BV_PW_DEVELOPER", "developer123"), "developer", "יזם"),
 ]
 
 PBKDF2_ITERATIONS = 200_000

@@ -7,6 +7,9 @@ const DEMO = [
   { username: 'developer', password: 'developer123', label: 'יזם', initial: 'י', desc: 'הכול, כולל עלויות (בסבב 1: נדחה)' },
 ] as const;
 
+/** Shared mode (external link): role cards only fill the username; the password must be typed. */
+const SHARED = import.meta.env.VITE_SHARED_MODE === '1';
+
 export function Login({ onLogin }: { onLogin: (u: User) => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -39,15 +42,23 @@ export function Login({ onLogin }: { onLogin: (u: User) => void }) {
           Build<span>Vision</span>
         </div>
         <h1>כניסה למערכת</h1>
-        <p className="muted" style={{ margin: 0 }}>בחרו משתמש דמו, או הזינו שם משתמש וסיסמה.</p>
+        <p className="muted" style={{ margin: 0 }}>
+          {SHARED ? 'בחרו תפקיד והזינו את הסיסמה שקיבלתם.' : 'בחרו משתמש דמו, או הזינו שם משתמש וסיסמה.'}
+        </p>
         <div className="role-cards">
           {DEMO.map((d) => (
             <button
               key={d.username}
               type="button"
-              className={`role-card role-${d.username}`}
+              className={`role-card role-${d.username}${SHARED && username === d.username ? ' sel' : ''}`}
               disabled={busy}
-              onClick={() => void doLogin(d.username, d.password)}
+              aria-pressed={SHARED ? username === d.username : undefined}
+              onClick={() => {
+                if (SHARED) {
+                  setUsername(d.username);
+                  document.getElementById('login-password')?.focus();
+                } else void doLogin(d.username, d.password);
+              }}
             >
               <span className="role-initial">{d.initial}</span>
               <strong>{d.label}</strong>
@@ -62,7 +73,7 @@ export function Login({ onLogin }: { onLogin: (u: User) => void }) {
           </label>
           <label>
             סיסמה
-            <input className="input" dir="ltr" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input id="login-password" className="input" dir="ltr" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </label>
           <button className="btn primary" type="submit" disabled={busy || !username || !password} style={{ height: 38 }}>
             כניסה
