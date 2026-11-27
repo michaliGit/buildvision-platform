@@ -8,3 +8,4 @@ __pycache__/
 .pytest_cache/
 backend/*.db
 backend/app/chat/model.joblib
+.boost/
