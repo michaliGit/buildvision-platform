@@ -3,10 +3,10 @@ import { api, ApiError, setToken, type User } from '../api';
 import { AboutModal } from './About';
 
 const DEMO = [
-  { username: 'client', password: 'client123', label: 'לקוח', initial: 'ל', desc: 'תלת־ממד, חללים, שטחים ואלמנטים' },
-  { username: 'contractor', password: 'contractor123', label: 'קבלן', initial: 'ק', desc: 'כל מה שהלקוח רואה + כתב כמויות ומחירים' },
-  { username: 'developer', password: 'developer123', label: 'יזם', initial: 'י', desc: 'הכול, כולל עלויות והעמסות' },
-] as const;
+  { role: 'client', username: import.meta.env.VITE_USER_CLIENT ?? 'client', password: 'client123', label: 'לקוח', initial: 'ל', desc: 'תלת־ממד, חללים, שטחים ואלמנטים' },
+  { role: 'contractor', username: import.meta.env.VITE_USER_CONTRACTOR ?? 'contractor', password: 'contractor123', label: 'קבלן', initial: 'ק', desc: 'כל מה שהלקוח רואה + כתב כמויות ומחירים' },
+  { role: 'developer', username: import.meta.env.VITE_USER_DEVELOPER ?? 'developer', password: 'developer123', label: 'יזם', initial: 'י', desc: 'הכול, כולל עלויות והעמסות' },
+];
 
 /** Shared mode (external link): role cards only fill the username; the password must be typed. */
 const SHARED = import.meta.env.VITE_SHARED_MODE === '1';
@@ -65,7 +65,7 @@ export function Login({ onLogin }: { onLogin: (u: User) => void }) {
             <button
               key={d.username}
               type="button"
-              className={`role-card role-${d.username}${SHARED && username === d.username ? ' sel' : ''}`}
+              className={`role-card role-${d.role}${SHARED && username === d.username ? ' sel' : ''}`}
               disabled={busy}
               aria-pressed={SHARED ? username === d.username : undefined}
               onClick={() => {

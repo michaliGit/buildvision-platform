@@ -5,7 +5,7 @@ from pathlib import Path
 # Tests use their own temporary DB (seeded automatically), never backend/buildvision.db.
 _TMP = Path(tempfile.mkdtemp(prefix="bv-test-"))
 os.environ["BV_DB_PATH"] = str(_TMP / "test.db")
-for _v in ("BV_PW_CLIENT", "BV_PW_CONTRACTOR", "BV_PW_DEVELOPER"):
+for _v in ("BV_PW_CLIENT", "BV_PW_CONTRACTOR", "BV_PW_DEVELOPER", "BV_USER_CLIENT", "BV_USER_CONTRACTOR", "BV_USER_DEVELOPER"):
     os.environ.pop(_v, None)
 
 import pytest
